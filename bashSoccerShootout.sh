@@ -20,6 +20,37 @@ computerscore=0
 totalkicksplayer=0
 totalkickscomputer=0
 
+
+display_menu(){
+
+cat <<EOF
+
+    --- MENU ---
+
+    1) Normal Shot
+    2) Chip shot
+    3) Stutter step shot
+
+EOF
+
+}
+
+display_score(){
+
+cat <<EOF
+
+    ---- SCORE ----
+
+    $teamPlayer : $playerscore
+    
+    $teamComputer : $computerscore
+
+EOF
+
+
+}
+
+
 while true; do
 
     echo -e "\nFlipping coin to see who gets the first flip"
@@ -34,13 +65,117 @@ while true; do
         yourFlipGuess=1
     fi
     
-    if [ "$coinFlip" -eq 1 -a "$yourFlipGuess" -eq 1 ]; then
+    if [ "$coinflip" -eq 1 -a "$yourFlipGuess" -eq 1 ]; then
         echo "You have won the flip!, you get to shoot first"
         turn=1
     else
         echo "You have lost the flip!, you get to shoot second"
         turn=0
     fi
+    while [ "$turn" -eq 1 -o "$turn" -eq 0 ]; do
+        display_score
+        if [ "$turn" -eq 1 ]; then
+            echo -e "\nPlayer taking shot"
+            display_menu
+            read playerShot
+            if [ "$playerShot" -lt 1 -o "$playerShot" -gt 3 ]; then
+                echo -e "\nEntered invalid option, switching to computer's turn, missed shot"
+                sleep 2
+                turn=0
+            else
+                sleep 2
+                if [ "$playerShot" -eq 1 ]; then
+                    computerGoalie=$(shuf -i 1-3 -n 1)
+                    if [ "$computerGoalie" -eq 3 ]; then
+                        echo -e "\nShot Blocked!"
+                        sleep 2
+                        turn=0
+                    else
+                        echo "\n$teamPlayer SCORES!!"
+                        sleep 2
+                        turn=0
+                        ((playerscore++))
+                    fi
+                elif [ "$playerShot" -eq 2 ]; then
+                    computerGoalie=$(shuf -i 1-2 -n 1)
+                    if [ "$computerGoalie" -eq 2 ]; then
+                        echo -e "\nShot Blocked!"
+                        sleep 2
+                        turn=0
+                    else
+                        echo -e "\n$teamPlayer SCORES!!"
+                        sleep 2
+                        turn=0
+                        ((playerscore++))
+                    fi
+                else
+                    computerGoalie=$(shuf -i 1-4 -n 1)
+                    if [ "$computerGoalie" -eq 4 ]; then
+                        echo -e "\nShot Blocked!"
+                        sleep 2
+                        turn=0
+                    else
+                        echo -e "\n$teamPlayer SCORES!!"
+                        sleep 2
+                        turn=0
+                        ((playerscore++))
+                    fi
+                fi
+            fi
+                    
+        else
+            echo -e "\nComputer choosing shot"
+            computerChoice=$(shuf -i 1-3 -n 1)
+            case $computerChoice in
+                1)
+                    echo -e "\nComputer chooses normal shot"
+                    sleep 2
+                    playerGoalie=$(shuf -i 1-3 -n 1)
+                    if [ "$playerGoalie" -eq 3 ]; then
+                        echo "Shot Blocked!"
+                        sleep 2
+                        turn=1
+                    else
+                        echo -e "\n$teamComputer SCORES!!"
+                        sleep 2
+                        turn=1
+                        ((computerscore++))
+                    fi
+                    ;;
+                2)
+                    echo -e "\nComputer chooses stutter step shot"
+                    sleep 2
+                    playerGoalie=$(shuf -i 1-2 -n 1)
+                    if [ "$playerGoalie" -eq 1 ]; then
+                        echo -e "\nShot Blocked!"
+                        sleep 2
+                        turn=1
+                    else
+                        echo -e "\n$teamComputer SCORES!!"
+                        sleep 2
+                        turn=1
+                        ((computerscore++))
+                    fi
+                    ;;
+                3)
+                    echo -e "\nComputer chooses chip shot"
+                    sleep 2
+                    playerGoalie=$(shuf -i 1-4 -n 1)
+                    if [ "$playerGoalie" -eq 3 ]; then
+                        echo -e "\nShot Blocked!"
+                        sleep 2
+                        turn=1
+                    else
+                        echo -e "\n$teamComputer SCORES!"
+                        sleep 2
+                        turn=1
+                        ((computerscore++))
+                    fi
+                    ;;
+            esac
+        fi
+    
+    done
 
 
 done
